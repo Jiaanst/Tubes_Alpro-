@@ -173,6 +173,8 @@ func kelolaSparePart(spareParts *[100]SparePart, countSpareParts *int, transacti
 	}
 }
 
+//--------------------------------------------------------------------------------------------------------------------------
+//Point B
 func updateHistoryFreq(history *[100]HistoryFreq, countHistory *int, sparePart SparePart) {
 	for i := 0; i < *countHistory; i++ {
 		if history[i].SparePart.Name == sparePart.Name {
