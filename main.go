@@ -38,11 +38,6 @@ func clear() {
 	fmt.Print("\033[H\033[J")
 }
 
-func loading() {
-	fmt.Println("Memproses...")
-	time.Sleep(1 * time.Second)
-}
-
 func tampilTransaction(transactions [100]Transaction, count int) {
 	if count == 0 {
 		fmt.Println(strings.Repeat("=", 80))
@@ -101,22 +96,22 @@ func kelolaSparePart(spareParts *[100]SparePart, countSpareParts *int, transacti
 		fmt.Println(strings.Repeat("=", 80))
 		switch input {
 		case 1:
-
 			reader := bufio.NewReader(os.Stdin)
+
 			// Input nama pelanggan dengan spasi
 			fmt.Print("Masukkan nama pelanggan: ")
 			customerName, _ := reader.ReadString('\n')
-			customerName = strings.TrimSpace(customerName)
+			customerName = strings.TrimSpace(customerName) // Menghapus newline
 			customer := Customer{Name: customerName}
 			fmt.Println(strings.Repeat("=", 80))
 
+			// Input nomor spare part (menggunakan fmt.Scanln seperti sebelumnya)
 			fmt.Print("Masukkan nomor spare part yang ingin ditambahkan ke transaksi: ")
 			var partNumber int
 			fmt.Scanln(&partNumber)
 			fmt.Println(strings.Repeat("=", 80))
 
 			if partNumber > 0 && partNumber <= *countSpareParts {
-
 				selectedPart := (*spareParts)[partNumber-1]
 				transactions[*countTransactions] = Transaction{Customer: customer, SparePart: selectedPart}
 				*countTransactions++
@@ -214,20 +209,16 @@ func updateHistPelanggan(history *[100]HistoryCust, historyCount *int, customer 
 	}
 }
 
-// -------------------------------------------------------------------------------------------------------------------------------------------------------
-// Point B
 func processTransaction(transactions *[100]Transaction, countTransactions *int, historyFreq *[100]HistoryFreq, historyFreqCount *int, historyPlgn *[100]HistoryCust, historyPlgnCount *int) {
 	clear()
 	fmt.Println(strings.Repeat("=", 80))
 	fmt.Println("========================= Total Transaksi per Pelanggan ========================")
 	fmt.Println(strings.Repeat("=", 80))
-	
 	totalPerPelanggan := make(map[string]int)
 	servicePerPelanggan := make(map[string]int)
 
 	for i := 0; i < *countTransactions; i++ {
 		transaction := transactions[i]
-		//harga service 20% per barang
 		serviceCharge := int(float64(transaction.SparePart.Price) * 0.2)
 		totalPerPelanggan[transaction.Customer.Name] += transaction.SparePart.Price
 		servicePerPelanggan[transaction.Customer.Name] += serviceCharge
@@ -309,6 +300,11 @@ func processTransaction(transactions *[100]Transaction, countTransactions *int, 
 	}
 }
 
+func loading() {
+	fmt.Println("Memproses...")
+	time.Sleep(1 * time.Second)
+}
+
 // -------------------------------------------------------------------------------------------------------------------------------------------------------
 // Point C
 // Fungsi Selection Sort untuk mengurutkan berdasarkan tanggal
@@ -335,7 +331,7 @@ func binarySearchByMonth(historyplgn [100]HistoryCust, dataCount, month int) ([1
 		currentMonth := int(historyplgn[mid].Date.Month())
 
 		if currentMonth == month {
-			// Tambahkan elemen tengah ke array
+			// Tambahkan elemen tengah ke array statis
 			result[resultCount] = historyplgn[mid]
 			resultCount++
 
@@ -444,10 +440,8 @@ func daftarPelanggan(historyplgn [100]HistoryCust, dataCount int) {
 		result := [100]HistoryCust{}
 		resultCount := 0
 		sequentialResult := sequentialSearchBySparePart(historyplgn, dataCount, sparePartName)
-
-		for i := 0; i < dataCount; i++ {
+		for _, record := range sequentialResult {
 			if resultCount < 100 {
-				record := sequentialResult[i]
 				result[resultCount] = record
 				resultCount++
 			}
@@ -573,7 +567,7 @@ func menuUtama() {
 		{"Ring Piston", "Mesin", 300000},
 		{"Kampas Kopling", "Mesin", 250000},
 		{"Gasket Mesin", "Mesin", 100000},
-		{"Bearing Kruk", "Mesin", 400000},
+		{"Bearing Kruk As", "Mesin", 400000},
 		{"Aki", "Kelistrikan", 700000},
 		{"Busi", "Kelistrikan", 50000},
 		{"Lampu Utama", "Kelistrikan", 150000},
@@ -592,7 +586,8 @@ func menuUtama() {
 		{"Oli Mesin", "Pendukung", 75000},
 		{"Filter Oli", "Pendukung", 50000},
 		{"Filter Udara", "Pendukung", 60000},
-		{"Kampas Rem", "Pendukung", 120000},
+		{"Kampas Rem Depan", "Pendukung", 120000},
+		{"Kampas Rem Belakang", "Pendukung", 110000},
 	}
 	var transactions [100]Transaction
 	var historyfrq [100]HistoryFreq
@@ -609,7 +604,7 @@ func menuUtama() {
 	}
 
 	historyfrq[2] = HistoryFreq{
-		SparePart: SparePart{Name: "Kampas Rem", Price: 120000},
+		SparePart: SparePart{Name: "Kampas Rem Depan", Price: 120000},
 		Frequency: 1,
 	}
 	historyfrq[3] = HistoryFreq{
